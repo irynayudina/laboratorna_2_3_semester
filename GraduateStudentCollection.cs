@@ -1,52 +1,58 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Security;
-using System.Text;
-
+using System.ComponentModel;
+using System.Data.Common;
+using System.Linq;
 
 namespace laboratorna_2_3_semester
 {
     
-    class GraduateStudentCollection<TKey>
+    class GraduateStudentCollection<TKey> //: IEnumerable
     {
-        public delegate TKey KeySelector<TKey>(GraduateStudent st);//student is lecturer
-        public KeySelector<TKey> CalculateKey()
-        {
+        public delegate TKey KeySelector<TKey>(GraduateStudent st);
+        public delegate void GraduateStudentsChangedHandler<TKey>(object sender, GraduateStudentsChangedEventArgs<TKey> args);
 
-        }
-        /*Метод, который используется для вычисления ключа при добавлении элемента
-GraduateStudent в коллекцию класса GraduateStudentCollection &lt;TKey&gt;, отвечает делегату
-KeySelector&lt;TKey&gt; и передается GraduateStudentCollection &lt;TKey&gt; через параметр
-единственного конструктора класса.*/
+        public event GraduateStudentsChangedHandler<TKey> GraduateStudentsChanged;
+
         public String Name { get; set; }
         private Dictionary<TKey, GraduateStudent> GraduateStudentsDictionaryCollection = new Dictionary<TKey, GraduateStudent>();
         private KeySelector<TKey> theKey;
-        GraduateStudentCollection(KeySelector<TKey>)
+        public GraduateStudentCollection(KeySelector<TKey> t)
         {
-
+            theKey = t;
+            GraduateStudentsDictionaryCollection = new Dictionary<TKey, GraduateStudent>();
         }
-        public void AddDefaults(int Size)
+        public void AddDefaults(int size)
         {
-            int size = 7;
-            GraduateStudent[] p = new GraduateStudent[size];
             for (int i = 0; i < size; i++)
             {
                 GraduateStudent grd = new GraduateStudent();
                 grd.LastName = grd.LastName + i;
-                p[i] = grd;
-                GraduateStudentsDictionaryCollection.Add(TKey, grd);
-            }            
+                TKey k = theKey(grd);
+                GraduateStudentsDictionaryCollection.Add(k, grd);
+            }
         }
-        public void AddGraduateStudent(params GraduateStudent[] )
+        public void AddGraduateStudent(params GraduateStudent[] p)
         {
-
+            if(theKey== null){
+                throw new Exception("Исключение вызвано нулевым  ключем");
+            }
+            else
+            {
+                foreach(var v in p)
+                {
+                    GraduateStudentsDictionaryCollection.Add(theKey(v), v);
+                    v.PropertyChanged += GraduateStudentPropertyChanged;
+                }
+            }
         }
         public override string ToString()
         {
             string res = "";
-            foreach(KeyValuePair <TKey, GraduateStudent> kvp in GraduateStudentsDictionaryCollection)
+            foreach (KeyValuePair<TKey, GraduateStudent> kvp in GraduateStudentsDictionaryCollection)
             {
-                res += "Key: " +kvp.Key + "\n" + "Value: " + "\n" + kvp.Value.ToString() + "\n\n\n";
+                res += "Key: " + kvp.Key + "\n" + "Value: " + "\n" + kvp.Value.ToString() + "\n\n\n";
             }
             return res;
         }
@@ -61,36 +67,74 @@ KeySelector&lt;TKey&gt; и передается GraduateStudentCollection &lt;TK
         }
         public bool Remove(GraduateStudent rt)
         {
-            foreach (KeyValuePair<TKey, GraduateStudent> kvp in GraduateStudentsDictionaryCollection)
+            if (GraduateStudentsDictionaryCollection.ContainsValue(rt))
             {
-                if(kvp.Value == rt)
+                foreach (KeyValuePair<TKey, GraduateStudent> kvp in GraduateStudentsDictionaryCollection)
                 {
-                    GraduateStudentsDictionaryCollection.Remove(kvp.Key);
-                    return true;
+                    if (kvp.Value == rt)
+                    {
+                        kvp.Value.PropertyChanged -= GraduateStudentPropertyChanged;
+                        GraduateStudentsDictionaryCollection.Remove(kvp.Key);
+                        GraduateStudentsChanged?.Invoke(kvp.Value, new GraduateStudentsChangedEventArgs<TKey>(Name, Revision.Remove, 0));
+                        return true;
+                    }
                 }
-            }
+            }                
             return false;
         }
         public bool Replace(GraduateStudent gsold, GraduateStudent gsnew)
         {
-            foreach (KeyValuePair<TKey, GraduateStudent> kvp in GraduateStudentsDictionaryCollection)
+            if (GraduateStudentsDictionaryCollection.ContainsValue(gsold))
             {
-                if (kvp.Value == gsold)
+                foreach (KeyValuePair<TKey, GraduateStudent> kvp in GraduateStudentsDictionaryCollection)
                 {
-                    
-                    GraduateStudentsDictionaryCollection.Remove(kvp.Key);
-                    GraduateStudentsDictionaryCollection[kvp.Key] = gsnew;
-                    return true;
+                    if (kvp.Value == gsold)
+                    {
+                        kvp.Value.PropertyChanged -= GraduateStudentPropertyChanged;
+                        GraduateStudentsDictionaryCollection.Remove(kvp.Key);
+                        GraduateStudentsDictionaryCollection.Add(theKey(gsnew), gsnew);
+                        GraduateStudentsChanged?.Invoke(kvp.Value, new GraduateStudentsChangedEventArgs<TKey>(Name, Revision.Replace, 0));
+                        return true;
+                    }
                 }
             }
+                
             return false;
         }
-        event GraduateStudentsChangedHandler<TKey> GraduateStudentsChanged;
-        ////////////////////////////////////////////////////////////////System.Linq.Enumerable
-        int MaxLearningYear 
-        { get { return 0; } }
+        public void GraduateStudentPropertyChanged(object obj, PropertyChangedEventArgs ar)
+        {
+            GraduateStudentsChanged?.Invoke(obj, new GraduateStudentsChangedEventArgs<TKey>(Name, Revision.Property, ar.PropertyName, 0) );//ListHandlerEventArgs<TKey>(Name, Revision.Replace, 0));
+        }
+
+        public int MaxLearningYear
+        {
+            get
+            {
+                if(GraduateStudentsDictionaryCollection.Count == 0) { return 0; }
+                return GraduateStudentsDictionaryCollection.Values.Max(GraduateStudent => GraduateStudent.LearningYear);
+            }
+        }
+        public IEnumerable<KeyValuePair<TKey, GraduateStudent>> TuitionForm(FormOfStudy value)
+        {
+            return GraduateStudentsDictionaryCollection.Where(el => el.Value.Form == value);
+        }
+        public IEnumerable<IGrouping<FormOfStudy, KeyValuePair<TKey,GraduateStudent>>> Grouped /*свойство типа IEnumerable&lt;IGrouping&lt; FormOfStudy,KeyValuePair&lt;TKey,
+GraduateStudent&gt;&gt;&gt; (только с методом get), выполняющее группировку элементов
+коллекции Dictionary&lt;TKey, GraduateStudent &gt; в зависимости от формы обучения с
+помощью метода GroupBy класса System.Linq.Enumerable.*/
+        //{
+        //    get{ return ; } 
+        //}
     }
 }
+
+
+
+
+
+
+
+
 /*
  using System;
 using System.Collections.Generic;

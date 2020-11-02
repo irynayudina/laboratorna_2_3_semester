@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography.X509Certificates;
 namespace laboratorna_2_3_semester
 {
     public enum FormOfStudy
