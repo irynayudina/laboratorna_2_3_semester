@@ -6,25 +6,21 @@ namespace laboratorna_2_3_semester
 {
     class GraduateStudentsChangedEventArgs<TKey> 
     {
-        public string nameOfCollectionOfOccuredEvent { get; set; }
-        public string typeOfChangesInTheCollection { get; set; }
-        public int numberOfElementThatWasChangedOrAdded { get; set; }
-        public GraduateStudentListHandlerEventArgs()
+        public string nameOfCollection { get; set; }
+        public Revision CalledBy { get; set; }
+        public string PropertyChangedName { get; set; }
+        public int YearOfStudy { get; set; }
+        public GraduateStudentsChangedEventArgs(string name, Revision cb, string pcn, int year)
         {
-            nameOfCollectionOfOccuredEvent = "default";
-            typeOfChangesInTheCollection = "default";
-            numberOfElementThatWasChangedOrAdded = 0;
+            nameOfCollection = name;
+            CalledBy = cb;
+            PropertyChangedName = pcn;
+            YearOfStudy = year;
         }
-        public GraduateStudentListHandlerEventArgs(string name, string type, int number)
+        public override  string ToString()
         {
-            nameOfCollectionOfOccuredEvent = name;
-            typeOfChangesInTheCollection = type;
-            numberOfElementThatWasChangedOrAdded = number;
-        }
-        override public string ToString()
-        {
-            return ($"\n Name of the collection: {nameOfCollectionOfOccuredEvent}\n Type of changes: {typeOfChangesInTheCollection}\n" +
-                $" Number of the element that was changed or added: {numberOfElementThatWasChangedOrAdded}\n");
+            return ($"\n Name of the collection: {nameOfCollection} \n Revision {CalledBy }\n Type of changes: {PropertyChangedName}\n" +
+                $"Year of study : {YearOfStudy}\n");
         }
     }
 }

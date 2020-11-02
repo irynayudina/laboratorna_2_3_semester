@@ -118,13 +118,13 @@ namespace laboratorna_2_3_semester
         {
             return GraduateStudentsDictionaryCollection.Where(el => el.Value.Form == value);
         }
-        public IEnumerable<IGrouping<FormOfStudy, KeyValuePair<TKey,GraduateStudent>>> Grouped /*свойство типа IEnumerable&lt;IGrouping&lt; FormOfStudy,KeyValuePair&lt;TKey,
-GraduateStudent&gt;&gt;&gt; (только с методом get), выполняющее группировку элементов
-коллекции Dictionary&lt;TKey, GraduateStudent &gt; в зависимости от формы обучения с
-помощью метода GroupBy класса System.Linq.Enumerable.*/
-        //{
-        //    get{ return ; } 
-        //}
+        public IEnumerable<IGrouping<FormOfStudy, KeyValuePair<TKey,GraduateStudent>>> Grouped 
+        {
+            get 
+            {
+                return GraduateStudentsDictionaryCollection.GroupBy(el => el.Value.Form);
+            }
+        }
     }
 }
 

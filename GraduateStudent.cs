@@ -8,6 +8,9 @@ namespace laboratorna_2_3_semester
 {
     class GraduateStudent : Person, IDateAndCopy, INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+
+
         private string employeePosition;
         private string speciality;
         private FormOfStudy form;
@@ -34,14 +37,20 @@ namespace laboratorna_2_3_semester
         public string Speciality
         {
             get { return speciality; }
-            set { speciality = value;
-                NotifyPropertyChanged();
+            set 
+            { 
+                speciality = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Speciality"));
             }
         }
         public FormOfStudy Form
         {
             get { return form; }
-            set { form = value; NotifyPropertyChanged(); }
+            set 
+            { 
+                form = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Form"));
+            }
         }
         public List<Article> ArticlesPublished
         {
@@ -205,12 +214,7 @@ namespace laboratorna_2_3_semester
 
 
 
-        public event PropertyChangedEventHandler PropertyChanged;
-       //хня обходима
-        private void NotifyPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] String propertyName = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
 
+        
     }
 }

@@ -7,6 +7,12 @@ namespace laboratorna_2_3_semester
         PartTime,
         Distance
     }
+    public enum Revision
+    {
+        Remove,
+        Replace,
+        Property
+    }
     class Program
     {
         static void Main()//string[] args
