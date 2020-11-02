@@ -75,7 +75,7 @@ namespace laboratorna_2_3_semester
                     {
                         kvp.Value.PropertyChanged -= GraduateStudentPropertyChanged;
                         GraduateStudentsDictionaryCollection.Remove(kvp.Key);
-                        GraduateStudentsChanged?.Invoke(kvp.Value, new GraduateStudentsChangedEventArgs<TKey>(Name, Revision.Remove, 0));
+                        GraduateStudentsChanged?.Invoke(kvp.Value, new GraduateStudentsChangedEventArgs<TKey>(Name, Revision.Remove, "", kvp.Value.LearningYear));
                         return true;
                     }
                 }
@@ -93,7 +93,7 @@ namespace laboratorna_2_3_semester
                         kvp.Value.PropertyChanged -= GraduateStudentPropertyChanged;
                         GraduateStudentsDictionaryCollection.Remove(kvp.Key);
                         GraduateStudentsDictionaryCollection.Add(theKey(gsnew), gsnew);
-                        GraduateStudentsChanged?.Invoke(kvp.Value, new GraduateStudentsChangedEventArgs<TKey>(Name, Revision.Replace, 0));
+                        GraduateStudentsChanged?.Invoke(kvp.Value, new GraduateStudentsChangedEventArgs<TKey>(Name, Revision.Replace, "", kvp.Value.LearningYear));
                         return true;
                     }
                 }
@@ -103,7 +103,7 @@ namespace laboratorna_2_3_semester
         }
         public void GraduateStudentPropertyChanged(object obj, PropertyChangedEventArgs ar)
         {
-            GraduateStudentsChanged?.Invoke(obj, new GraduateStudentsChangedEventArgs<TKey>(Name, Revision.Property, ar.PropertyName, 0) );//ListHandlerEventArgs<TKey>(Name, Revision.Replace, 0));
+            GraduateStudentsChanged?.Invoke(obj, new GraduateStudentsChangedEventArgs<TKey>(Name, Revision.Property, ar.PropertyName, 0));
         }
 
         public int MaxLearningYear
