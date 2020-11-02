@@ -103,7 +103,7 @@ namespace laboratorna_2_3_semester
         }
         public void GraduateStudentPropertyChanged(object obj, PropertyChangedEventArgs ar)
         {
-            GraduateStudentsChanged?.Invoke(obj, new GraduateStudentsChangedEventArgs<TKey>(Name, Revision.Property, ar.PropertyName, 0));
+            GraduateStudentsChanged?.Invoke(obj, new GraduateStudentsChangedEventArgs<TKey>(Name, Revision.Property, ar.PropertyName, (obj as GraduateStudent).LearningYear));
         }
 
         public int MaxLearningYear

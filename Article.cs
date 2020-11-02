@@ -29,7 +29,7 @@ namespace laboratorna_2_3_semester
         {
             Article a = (Article)this.MemberwiseClone();
             a.Name = new string(Name); //String.Copy(Name);
-            a.Plac e = new string(Place); //String.Copy(Place);
+            a.Place = new string(Place); //String.Copy(Place);
             a.Date = new DateTime(Date.Year, Date.Month, Date.Day);
             return a;
         }
