@@ -15,9 +15,37 @@ namespace laboratorna_2_3_semester
     }
     class Program
     {
-        static void Main()//string[] args
+        static string MakeKey(GraduateStudent g)
         {
-            GraduateStudentCollection <string> coll1 = new GraduateStudentCollection<string>
+            return g.Name;
+        }
+        static void Main(string[] args)
+        {
+            GraduateStudentCollection<string> coll1 = new GraduateStudentCollection<string>(MakeKey);
+            GraduateStudentCollection<string> coll2 = new GraduateStudentCollection<string>(MakeKey);
+            TeamsJournal journal = new TeamsJournal();
+            coll1.Name = "firstCollection";
+            coll2.Name = "secondCollection";
+            coll1.GraduateStudentsChanged += journal.GraduateStudentsChangedHandler;
+            coll2.GraduateStudentsChanged += journal.GraduateStudentsChangedHandler;
+            coll1.AddDefaults(4);
+            GraduateStudent g1 = new GraduateStudent();
+            GraduateStudent g2 = new GraduateStudent();
+            GraduateStudent g3 = new GraduateStudent();
+            GraduateStudent g4 = new GraduateStudent();
+            GraduateStudent g5 = new GraduateStudent();
+            GraduateStudent g6 = new GraduateStudent();
+            coll1.AddGraduateStudent(g1, g2, g3);
+            coll2.AddGraduateStudent(g1, g2, g3);
+            coll2.AddDefaults(3);
+            g1.Speciality = "Specialty is changed";
+            g4.Form = FormOfStudy.Distance;
+            coll1.Remove(g2);
+            g2.Form = FormOfStudy.PartTime;
+            GraduateStudent g7 = new GraduateStudent(new Person(), new Person(), "pos", "spec", 0, 3);
+            coll2.Replace(g3, g7);
+            g3.Speciality = "Specialty is changed";
+            Console.WriteLine(journal);
             //Person person1 = new Person();
             //Person person2 = new Person();
             //Console.WriteLine("Person2 and Person1 are the same instance: " + ReferenceEquals(person2, person1));
